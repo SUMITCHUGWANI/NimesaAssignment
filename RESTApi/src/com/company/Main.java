@@ -14,7 +14,7 @@ public class Main {
 
         Scanner input = new Scanner(System.in);
         String url = "https://samples.openweathermap.org/data/2.5/forecast/hourly?q=London,us&appid=b6907d289e10d714a6e88b30761fae22";
-        String response = getJSONArray(url, "GET");
+        String response = makeHTTPcall(url, "GET");
         JSONObject jsonResponse = new JSONObject(response);
         JSONArray jsonList = (JSONArray) jsonResponse.get("list");
         int count = jsonList.length();
@@ -28,44 +28,44 @@ public class Main {
         while (true) {
             System.out.println("Enter the value:");
             int userInput = input.nextInt();
+            input.nextLine();
             if (userInput == 0) {
                 break;
             } else {
-                Scanner newinput = new Scanner(System.in);
                 System.out.println("Enter the date (in the format of YYYY-MM-DD) ");
-                String date = newinput.nextLine();
+                String date = input.nextLine();
                 System.out.println("Enter the time (in the format of HH:MM:SS)");
-                String time = newinput.nextLine();
+                String time = input.nextLine();
                 getAnswer(userInput, date, time, jsonList);
             }
         }
     }
 
-    static void getAnswer(int a, String date, String time, JSONArray jsonList) {
+    static void getAnswer(int userInput, String date, String time, JSONArray jsonList) {
         int count = jsonList.length();
         for (int i = 0; i < count; i++) {
             JSONObject jsonObject = jsonList.getJSONObject(i);
             if (jsonObject.get("date").equals(date) && jsonObject.get("time").equals(time)) {
-                if (a == 1) {
+                if (userInput == 1) {
                     JSONObject jo = (JSONObject) jsonObject.get("main");
                     System.out.println("The temperature is " + jo.get("temp"));
                     return;
-                } else if (a == 3) {
+                } else if (userInput == 2) {
 
-                    JSONObject jo = (JSONObject) jsonObject.get("main");
-                    System.out.println("The Pressure is " + jo.get("pressure"));
-                    return;
-                } else if (a == 2) {
                     JSONObject jo = (JSONObject) jsonObject.get("wind");
                     System.out.println("The wind speed is " + jo.get("speed"));
+                    return;
+                } else if (userInput == 3) {
+                    JSONObject jo = (JSONObject) jsonObject.get("main");
+                    System.out.println("The pressure is " + jo.get("pressure"));
                     return ;
                 }
             }
         }
-        System.out.println("No Data available for this date and time");
+        System.out.println("No Data available for this date and time or the provided format of date and time is not correct");
     }
 
-    static String getJSONArray(String url, String httpCall) {
+    static String makeHTTPcall(String url, String httpCall) {
 
         try {
             URL obj = new URL(url);
